@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jorus Junio – Web Résumé</title>
+
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #1e40af; /* blue */
+      --accent-2: #0f172a; /* dark */
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 30px rgba(15,23,42,0.08);
+      --radius: 14px;
+      --skill-hover: #e0f2fe; /* Light blue for hover */
+    }
+    .dark{
+      --bg: #0b1020;
+      --card: #0f1724;
+      --muted: #9ca3af;
+      --accent: #60a5fa;
+      --accent-2: #e6eefc;
+      --glass: rgba(255,255,255,0.03);
+      --shadow: 0 8px 30px rgba(2,6,23,0.6);
+      --skill-hover: #1e293b; /* Darker blue for hover in dark mode */
+    }
+
+    *{box-sizing: border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    
+    /* UPDATED: Body styles para sa ::before pseudo-element */
+    body{
+      background:var(--bg);
+      color:var(--accent-2);
+      -webkit-font-smoothing:antialiased;
+      position: relative; 
+      z-index: 1; 
+      overflow-x: hidden;
+    }
+    @keyframes gradient-move {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+    /* NEW: 2% Opacity Background Image */
+    body::before {
+        content: "";
+        position: fixed; 
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('A.avif'); /* PALITAN ITO NG FILENAME/PATH MO */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.3; /* 2% OPACITY */
+        z-index: -1; 
+    }
+
+    /* Layout */
+    .wrap{max-width:1100px;margin:30px auto;padding:18px}
+    .grid{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:20px;
+      align-items:start;
+    }
+
+    /* Sticky side nav */
+    aside{
+      position:sticky;
+      top:20px;
+      /* TINANGGAL ANG HEIGHT AT MAX-HEIGHT */
+      height: auto; 
+      align-self:start;
+      padding:18px;
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid rgba(0,0,0,0.04);
+      display:flex;
+      flex-direction:column;
+      gap:50px;
+      /* INALIS ANG OVERFLOW:AUTO */
+      overflow:visible;
+    }
+    .profile {
+      display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px
+    }
+    .avatar img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      display:block;
+      border-radius: 10%;
+    }
+    .name{font-size:20px;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+
+    nav.menu{display:flex;flex-direction:column;gap:8px}
+    nav.menu a{display:block;padding:10px 12px;border-radius:10px;color:var(--accent-2);text-decoration:none;font-weight:600}
+    nav.menu a:hover{background:var(--glass);color:var(--accent)}
+
+    .actions{display:flex;gap:8px;justify-content:center}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(30,64,175,0.12)}
+
+    /* Main content */
+    main{padding:18px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
+    section{margin-bottom:20px;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    section h2{margin:6px 0 12px;color:var(--accent);border-left:4px solid var(--accent);padding-left:10px}
+
+    .skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+    .skill{
+      background:linear-gradient(180deg,rgba(30,64,175,0.06),rgba(30,64,175,0.02));
+      padding:10px;
+      border-radius:10px;
+      border:1px solid rgba(30,64,175,0.06);
+      font-weight:600;
+      color:var(--accent-2);
+      transition: all 0.2s ease-in-out; 
+    }
+    .skill:hover {
+      background: var(--skill-hover); 
+      border-color: var(--accent);
+      transform: translateY(-2px); 
+      box-shadow: 0 4px 10px rgba(30,64,175,0.1);
+      cursor: pointer;
+    }
+
+    .project{padding:10px;border-radius:10px;border-left:4px solid var(--accent);background:linear-gradient(90deg,rgba(0,0,0,0.01),transparent);margin-bottom:8px}
+
+    .pdf-list{display:flex;flex-direction:column;gap:8px}
+    .file-input{display:flex;align-items:center;gap:8px}
+    input[type=file]{display:none}
+    label.upload{padding:8px 10px;background:var(--accent);color:white;border-radius:8px;cursor:pointer;font-weight:700}
+
+    /* Responsive / mobile */
+    @media(max-width:900px){
+      .grid{grid-template-columns:1fr;}
+      aside{position:relative;height:auto}
+      .wrap{margin:12px}
+    }
+
+    /* small helpers */
+    .link{color:var(--accent);font-weight:700;text-decoration:none}
+    .muted-small{color:var(--muted);font-size:13px}
+
+  </style>
+</head>
+<body>
+
+  <div class="wrap" id="top">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px">
+      <div>
+        <div style="font-weight:800;font-size:22px">Jorus Junio (Josh)</div>
+        <div class="muted-small">2nd Year IT Student • Software Development • Machine Learning</div>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" id="downloadPdf">Download as PDF</button>
+        <button class="btn secondary" id="printBtn">Print</button>
+        <button class="btn secondary" id="toggleTheme" aria-pressed="false">🌙 Dark</button>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <aside aria-label="Sidebar">
+        <div class="profile" data-aos="fade-right">
+          <div class="avatar">
+            <img src="Formal Jorus.jpg" alt="avatar">
+          </div>
+          <div class="name">Jorus H. Junio</div>
+          <div class="muted">Quezon City • +63 953 2655 853</div>
+          <div class="muted">jorus.junio@neu.edu.ph</div>
+        </div>
+
+        <nav class="menu" aria-label="Main navigation" data-aos="fade-up">
+          <a href="#education">Education</a>
+          <a href="#qualifications">Qualifications</a>
+          <a href="#skills">Skills</a>
+          <a href="#awards">Awards & Certifications</a>
+          <a href="#evidence">Upload Evidence</a>
+        </nav>
+
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px" data-aos="fade-up">
+          <a class="link" href="#portfolio">Portfolio / GitHub</a>
+          <div class="muted-small">Available for internships & remote roles</div>
+        </div>
+      </aside>
+
+      <main>
+
+        <section id="education" data-aos="fade-up">
+          <h2>Educational Background</h2>
+          <div class="muted-small">Bachelor of Science in Information Technology</div>
+          <div style="font-weight:700;margin-top:6px">New Era University (2024 – Present)</div>
+        </section>
+
+        <section id="qualifications" data-aos="fade-up">
+          <h2>Qualifications</h2>
+          <ul>
+            <li>Foundational knowledge in software development (Java, Python) and database systems (SQL).</li>
+            <li>Experience with version control (Git) and collaborative development workflows.</li>
+            <li>Basic machine learning understanding - data preprocessing, simple models, evaluation metrics.</li>
+            <li>Familiar with UI/UX principles and prototyping tools (Figma basics).</li>
+            <li>Problem-solving mindset; strong analytical & debugging skills.</li>
+          </ul>
+        </section>
+
+        <section id="skills" data-aos="fade-up">
+          <h2>Skills</h2>
+          <div class="skills">
+            <div class="skill">Java</div>
+            <div class="skill">Python</div>
+            <div class="skill">SQL</div>
+            <div class="skill">HTML & CSS</div>
+            <div class="skill">Git & GitHub</div>
+            <div class="skill">Problem Solving</div>
+            <div class="skill">UI/UX (Figma)</div>
+            <div class="skill">Basic Networking</div>
+          </div>
+        </section>
+
+        <section id="projects" data-aos="fade-up">
+          <h2>Projects & Experience</h2>
+          <div class="project">
+            <div style="font-weight:700">Student Information System</div>
+            <div class="muted-small">Python, SQL - CRUD app for academic records. Implemented joins, views, and basic stored procedures.</div>
+          </div>
+          <div class="project">
+            <div style="font-weight:700">Inventory System</div>
+            <div class="muted-small">Group project - backend logic, debugging, and documentation.</div>
+          </div>
+          <div class="project">
+            <div style="font-weight:700">Portfolio Website</div>
+            <div class="muted-small">Responsive site built with HTML/CSS showcasing projects and certificates.</div>
+          </div>
+        </section>
+
+        <section id="awards" data-aos="fade-up">
+          <h2>Awards & Certifications</h2>
+          <ul>
+            <li>SQL and Relational Databases 101 <a class="link" href="https://courses.cognitiveclass.ai/certificates/ed04a0cf2a784e5dbe601d75cce27eea" target="_blank">View Certificate</a></li>
+            <li>Oracle Cloud Infrastructure 2025 Certified Foundations Associate</li>
+            <li>Oracle Data Platform 2025 Certified Foundations Associate <a class="link" href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=EB06AAC8172FE977394222167D8C9CD5E80BCBAC739F7F20E837DF076FE96AC9" target="_blank">View Certificate</a></li>
+            <li>Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate</li>
+          </ul>
+        </section>
+
+        <section id="evidence" data-aos="fade-up">
+          <h2>Upload Evidence (Qualifications / Awards / Certifications)</h2>
+          <p class="muted-small">Select PDF files to attach as evidence. Files will be listed below but note: to actually submit these you'll need to upload them to the target application or include them in the hosted site bundle.</p>
+
+          <div class="pdf-list" id="pdfList">
+            </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <label class="upload" for="fileInput">Choose PDF</label>
+            <input id="fileInput" type="file" accept="application/pdf" multiple aria-label="Upload PDF certificates" />
+            <button class="btn secondary" id="clearFiles">Clear</button>
+          </div>
+        </section>
+
+        <section id="portfolio" data-aos="fade-up">
+          <h2>Portfolio / Links</h2>
+          <ul>
+            <li>GitHub: <a class="link" href="https://github.com/jorusjunio" target="_blank">github.com/jorusjunio</a></li>
+            <li>Web Resume: <a class="link" href="#top">This page</a></li>
+          </ul>
+        </section>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <script>
+    AOS.init({
+    duration: 700,
+    once: true,
+    // Ito ang karaniwang solusyon para sa AOS scrollbar issue:
+    disable: function() {
+      var maxWidth = 900;
+      return window.innerWidth < maxWidth;
+    }
+});
+
+// Ito ay magtatanggal ng overflow-x: hidden (kung kailangan) 
+// pagkatapos mag-load ng page at AOS animations.
+document.body.style.overflowX = 'hidden'; 
+window.addEventListener('load', () => {
+    // Puwede ring gamitin ang setTimeout para masiguradong tapos na ang AOS
+    setTimeout(() => {
+        document.body.style.overflowX = 'auto'; // Ibalik sa normal
+    }, 1000); // 1 segundo (mas matagal sa duration: 700)
+});
+
+    // Dark mode toggle
+    const toggle = document.getElementById('toggleTheme');
+    toggle.addEventListener('click', ()=>{
+      document.documentElement.classList.toggle('dark');
+      const pressed = document.documentElement.classList.contains('dark');
+      toggle.setAttribute('aria-pressed', pressed);
+      toggle.textContent = pressed ? '☀️ Light' : '🌙 Dark';
+    });
+
+    // Smooth scroll for nav
+    document.querySelectorAll('nav.menu a').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const id = a.getAttribute('href');
+        document.querySelector(id).scrollIntoView({behavior:'smooth',block:'start'});
+      })
+    });
+
+    // File upload listing
+    // File upload listing and storing
+    let uploadedFiles = []; // Dito natin ise-save ang listahan ng files
+
+    const fileInput = document.getElementById('fileInput');
+    const pdfList = document.getElementById('pdfList');
+    const clearBtn = document.getElementById('clearFiles');
+
+    function renderFileList() {
+      pdfList.innerHTML = '';
+      uploadedFiles.forEach((f, idx) => {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.padding = '8px';
+        div.style.borderRadius = '8px';
+        div.style.border = '1px solid var(--accent)'; /* Highlighted border */
+        // Gumamit ng kulay para mag-indicate na 'uploaded'
+        div.style.background = 'linear-gradient(90deg, rgba(96, 165, 250, 0.1), transparent)'; 
+        
+        // Iba ang display: Filename at "Uploaded" status
+        div.innerHTML = `
+          <div style="font-weight:700; color:var(--accent)">
+            ${f.name} 
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="color:#10b981; font-weight:700; font-size:13px;">✅ Uploaded</span>
+            <span style="font-size:13px; color:var(--muted)">${(f.size / 1024).toFixed(1)} KB</span>
+          </div>
+        `;
+        pdfList.appendChild(div);
+      });
+    }
+
+    fileInput.addEventListener('change', () => {
+      // Idagdag ang bagong files sa listahan
+      uploadedFiles = uploadedFiles.concat(Array.from(fileInput.files));
+      renderFileList();
+      fileInput.value = ''; // I-reset ang input para makapag-upload ulit ng iba pang files
+    });
+
+    clearBtn.addEventListener('click', () => {
+      uploadedFiles = []; // I-clear ang listahan
+      fileInput.value = '';
+      pdfList.innerHTML = '';
+    });
+
+    // Download as PDF using html2pdf
+    document.getElementById('downloadPdf').addEventListener('click', ()=>{
+      const opt = {
+        margin:       0.4,
+        filename:     'Jorus_Junio_Resume.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      const element = document.querySelector('.wrap');
+      html2pdf().set(opt).from(element).save();
+    });
+
+    // Print
+    document.getElementById('printBtn').addEventListener('click', ()=>{window.print();});
+
+  </script>
+
+</body>
+</html>
